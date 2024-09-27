@@ -6,6 +6,7 @@ import Foundation
   import SwiftSyntax
   import SwiftSyntaxBuilder
   import XCTest
+  import FileSerializationPlugin
 
   /// Asserts that a given value matches an inline string snapshot.
   ///
