@@ -5,7 +5,7 @@ import FileSerializationPlugin
 final class FileSerializer {
   
   /// A collection of plugins that conform to the `FileSerialization` protocol.
-  private let plugins: [FileSerialization]
+  private let plugins: [any FileSerialization]
   
   init() {
     self.plugins = PluginRegistry.allPlugins()

@@ -3,10 +3,15 @@ import Foundation
 
 public typealias FileSerializationPlugin = FileSerialization & SnapshotTestingPlugin
 
-public protocol FileSerialization {
+@preconcurrency public protocol FileSerialization {
+  associatedtype Configuration
   static var location: FileSerializationLocation { get }
   func write(_ data: Data, to url: URL, options: Data.WritingOptions) async throws
   func read(_ url: URL) async throws -> Data?
+
+  // This should not be called ofter
+  func start(_ configuration: Configuration) async throws
+  func stop() async throws
 }
 
 public enum FileSerializationLocation: RawRepresentable, Sendable, Equatable {
