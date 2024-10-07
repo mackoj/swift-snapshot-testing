@@ -1,11 +1,14 @@
 import XCTest
 import ImageSerializationPlugin
+import FileSerializationPlugin
 
 #if canImport(Testing)
   // NB: We are importing only the implementation of Testing because that framework is not available
   //     in Xcode UI test targets.
   @_implementationOnly import Testing
 #endif
+
+public var fileLocation: FileSerializationLocation = .defaultValue
 
 /// Whether or not to change the default output image format to something else.
 public var imageFormat: ImageSerializationFormat {
@@ -387,7 +390,7 @@ public func verifySnapshot<Value, Format>(
       }
 
       func recordSnapshot() throws {
-        try snapshotting.diffing.toData(diffable).write(to: snapshotFileUrl)
+        try FileSerializer().write(snapshotting.diffing.toData(diffable), to: snapshotFileUrl, location: fileLocation)
         #if !os(Linux) && !os(Windows)
           if !isSwiftTesting,
             ProcessInfo.processInfo.environment.keys.contains("__XCODE_BUILT_PRODUCTS_DIR_PATHS")
@@ -424,7 +427,8 @@ public func verifySnapshot<Value, Format>(
           """
       }
 
-      let data = try Data(contentsOf: snapshotFileUrl)
+      guard let data = try FileSerializer().read(snapshotFileUrl, location: fileLocation)
+      else { return nil }
       let reference = snapshotting.diffing.fromData(data)
 
       #if os(iOS) || os(tvOS)
